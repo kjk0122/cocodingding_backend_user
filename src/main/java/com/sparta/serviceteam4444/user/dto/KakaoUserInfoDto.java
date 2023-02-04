@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 public class KakaoUserInfoDto {
     private Long id;
     private String username;
-    private String nickname;
+    private String email;
 
-    public KakaoUserInfoDto(Long id, String username, String nickname) {
+    public KakaoUserInfoDto(Long id, String username, String email) {
         this.id = id;
         this.username= username;
-        this.nickname = nickname;
+        this.email = email;
     }
 }

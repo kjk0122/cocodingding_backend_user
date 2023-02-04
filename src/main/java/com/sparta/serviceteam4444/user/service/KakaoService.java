@@ -97,17 +97,19 @@ public class KakaoService {
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
-
+                log.info(jsonNode.get("kakao_account").get("email").asText())   ;
         //성분별로 쓰기 좋게 분리하기
         Long id = jsonNode.get("id").asLong();
         String username = jsonNode.get("properties").get("nickname").asText();
-        String nickname = username;
-        return new KakaoUserInfoDto(id, username, nickname);
+        String email = jsonNode.get("kakao_account").get("email").asText();
+
+        return new KakaoUserInfoDto(id, username, email);
     }
     // 3. 필요시에 회원가입
     private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         Long kakaoId = kakaoUserInfo.getId();
+        String email = kakaoUserInfo.getEmail();
         User kakaoUser;
         // 카카오 사용자 id 동일한 id 가진 회원이 있는지 확인
         User sameidUser = userRepository.findByKakaoId(kakaoId).orElse(null);
@@ -121,10 +123,11 @@ public class KakaoService {
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
             //유저 틀 만들기
-            kakaoUser = new User(kakaoUserInfo.getUsername(), kakaoId, encodedPassword);
+            kakaoUser = new User(kakaoUserInfo.getUsername(), email, kakaoId, encodedPassword);
         }
         //저장!
         userRepository.save(kakaoUser);
         return kakaoUser;
     }
+
 }

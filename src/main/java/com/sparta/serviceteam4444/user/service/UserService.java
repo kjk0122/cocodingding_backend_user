@@ -36,16 +36,9 @@ public class UserService {
     @Transactional
     public ResponseDto signup(SignupRequestDto signupRequestDto) {
         //이름, 비밀번호 대조를 위해 값을 뽑아놓음
-        String username = signupRequestDto.getUsername();
+        String email = signupRequestDto.getEmail();
         String pwcheck = signupRequestDto.getPassword();
         String passwordCheck = signupRequestDto.getPasswordCheck();
-
-        //username 조건 확인
-        if (!Pattern.matches(pt, username)) {
-
-            throw new IllegalArgumentException(
-                    "아이디는 최소 4자 이상, 10자 이하이며 알파벳 소문자(a~z), 숫자(0~9) 에 한해서 구성되어야합니다.");
-        }
         //비밀번호 조건 확인
         if (!Pattern.matches(ptt, pwcheck)) {
             throw new IllegalArgumentException(
@@ -56,7 +49,7 @@ public class UserService {
                     "비밀번호 입력을 다시 확인해주세요.");
         }
         // 회원 중복 확인
-        Optional<User> found = userRepository.findByUsername(username);
+        Optional<User> found = userRepository.findByEmail(email);
         if (found.isPresent()) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
@@ -87,7 +80,7 @@ public class UserService {
         }
         //토큰을 생성해서 유저에게 줌
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
-        return new ResponseDto(user.getNickname() + " 님 로그인 완료");
+        return new ResponseDto(user.getUsername() + " 님 로그인 완료");
     }
     @Transactional
     public UserInfoDto getInfo(HttpServletRequest request) {
@@ -99,7 +92,7 @@ public class UserService {
         User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
                 () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
         );
-        return new UserInfoDto(user.getUsername(),user.getNickname());
+        return new UserInfoDto(user.getUsername(),user.getUsername());
     }
     @Transactional
     public ResponseDto changePassword(String username, ChangePasswordRequestDto changePasswordRequestDto, User user) {
