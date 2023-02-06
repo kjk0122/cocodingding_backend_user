@@ -41,7 +41,7 @@ public class KakaoService {
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. JWT 토큰 반환
-        String createToken =  jwtUtil.createToken(kakaoUser.getUsername(), kakaoUser.getRole());
+        String createToken =  jwtUtil.createToken(kakaoUser.getNickName(), kakaoUser.getRole());
         // 토큰 던져주기
         return createToken;
     }
@@ -100,14 +100,14 @@ public class KakaoService {
                 log.info(jsonNode.get("kakao_account").get("email").asText())   ;
         //성분별로 쓰기 좋게 분리하기
         Long id = jsonNode.get("id").asLong();
-        String username = jsonNode.get("properties").get("nickname").asText();
+        String nickName = jsonNode.get("properties").get("nickname").asText();
         String email;
         try {
             email = jsonNode.get("kakao_account").get("email").asText();
         }catch(NullPointerException e){
             email = "";
         }
-        return new KakaoUserInfoDto(id, username, email);
+        return new KakaoUserInfoDto(id, nickName, email);
     }
     // 3. 필요시에 회원가입
     private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
@@ -127,7 +127,7 @@ public class KakaoService {
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
             //유저 틀 만들기
-            kakaoUser = new User(kakaoUserInfo.getUsername(), email, kakaoId, encodedPassword);
+            kakaoUser = new User(kakaoUserInfo.getNickName(), email, kakaoId, encodedPassword);
         }
         //저장!
         userRepository.save(kakaoUser);

@@ -67,11 +67,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public ResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         //이름, 비밀번호 대조를 위해 값을 뽑아놓음
-        String username = loginRequestDto.getUsername();
+        String nickName = loginRequestDto.getNickName();
         String password = loginRequestDto.getPassword();
 
         // 사용자 확인
-        User user = userRepository.findByUsername(username).orElseThrow(
+        User user = userRepository.findByNickName(nickName).orElseThrow(
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
         );
         // 비밀번호 확인
@@ -79,8 +79,8 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         //토큰을 생성해서 유저에게 줌
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
-        return new ResponseDto(user.getUsername() + " 님 로그인 완료");
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getNickName(), user.getRole()));
+        return new ResponseDto(user.getNickName() + " 님 로그인 완료");
     }
     @Transactional
     public UserInfoDto getInfo(HttpServletRequest request) {
@@ -89,18 +89,18 @@ public class UserService {
         // 토큰에서 사용자 정보 가져오기
         Claims claims = jwtUtil.getUserInfoFromToken(token);
         // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-        User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
+        User user =  userRepository.findByNickName(claims.getSubject()).orElseThrow(
                 () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
         );
-        return new UserInfoDto(user.getUsername(),user.getUsername());
+        return new UserInfoDto(user.getNickName(),user.getNickName());
     }
     @Transactional
-    public ResponseDto changePassword(String username, ChangePasswordRequestDto changePasswordRequestDto, User user) {
-        Optional<User> found = userRepository.findByUsername(username);
+    public ResponseDto changePassword(String nickName, ChangePasswordRequestDto changePasswordRequestDto, User user) {
+        Optional<User> found = userRepository.findByNickName(nickName);
         if (found.isEmpty() || !found.get().isState()) {    //삭제된 상태에서 비밀번호 변경 방지
             throw new IllegalArgumentException("사용자가 없습니다.");
         }
-        if(!user.getUsername().equals(username)){ //대리 삭제 방지
+        if(!user.getNickName().equals(nickName)){ //대리 삭제 방지
             throw new IllegalArgumentException("다른 아이디 삭제는 안됩니다.");
         }
         //요청받은 비번 값 확인
@@ -116,12 +116,12 @@ public class UserService {
     }
 
     @Transactional  // soft delete 이고 게시글 댓글도 지움
-    public ResponseDto softDeleteId(String username, User user) {
-        Optional<User> found = userRepository.findByUsername(username);
+    public ResponseDto softDeleteId(String nickName, User user) {
+        Optional<User> found = userRepository.findByNickName(nickName);
         if (found.isEmpty() || !found.get().isState()) {    //삭제된 상태에서 다시 삭제 방지
             throw new IllegalArgumentException("사용자가 없습니다.");
         }
-        if(!user.getUsername().equals(username)){ //대리 삭제 방지
+        if(!user.getNickName().equals(nickName)){ //대리 삭제 방지
             throw new IllegalArgumentException("다른 아이디 삭제는 안됩니다.");
         }
 

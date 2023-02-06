@@ -17,7 +17,7 @@ public class User {
     @Column
     private Long kakaoId;
     @Column(nullable = false)
-    private String username;
+    private String nickName;
     @Column
     private String email;
     @Column(nullable = false)
@@ -26,18 +26,18 @@ public class User {
     private UserRoleEnum role = UserRoleEnum.USER;
     @Column(nullable = false)
     private boolean state = true;
-    public User(String username, String email, String password) {
-        this.username = username;
+    public User(String nickName, String email, String password) {
+        this.nickName = nickName;
         this.email = email;
         this.password = password;
     }
     public User(SignupRequestDto signupRequestDto, String password) {
-        this.username = signupRequestDto.getUsername();
+        this.nickName = signupRequestDto.getNickName();
         this.email = signupRequestDto.getEmail();
         this.password = password;
     }
-    public User(String username, String email, Long kakaoId, String password) {
-        this.username = username;
+    public User(String nickName, String email, Long kakaoId, String password) {
+        this.nickName = nickName;
         this.email = email;
         this.kakaoId = kakaoId;
         this.password = password;

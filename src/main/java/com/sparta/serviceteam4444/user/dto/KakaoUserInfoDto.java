@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class KakaoUserInfoDto {
     private Long id;
-    private String username;
+    private String nickName;
     private String email;
 
-    public KakaoUserInfoDto(Long id, String username, String email) {
+    public KakaoUserInfoDto(Long id, String nickName, String email) {
         this.id = id;
-        this.username= username;
+        this.nickName= nickName;
         this.email = email;
     }
 }
