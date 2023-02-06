@@ -101,8 +101,12 @@ public class KakaoService {
         //성분별로 쓰기 좋게 분리하기
         Long id = jsonNode.get("id").asLong();
         String username = jsonNode.get("properties").get("nickname").asText();
-        String email = jsonNode.get("kakao_account").get("email").asText();
-
+        String email;
+        try {
+            email = jsonNode.get("kakao_account").get("email").asText();
+        }catch(NullPointerException e){
+            email = "";
+        }
         return new KakaoUserInfoDto(id, username, email);
     }
     // 3. 필요시에 회원가입
